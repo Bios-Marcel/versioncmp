@@ -53,20 +53,25 @@ func Compare(originalA, originalB string, rules VersionCompareRules) string {
 		// FIXME Potentially there can be a date in additional to semver?
 		// Do we need sepaerate groups of numbers?
 		if len(groupA) == 3 && len(groupB) == 3 {
-			// Last part might be a year.
-			if groupA[2] < 1900 || groupB[2] < 1900 {
+			// Last part might be a year. For now, the dates are between 1960
+			// and 2030. It would be possible to use the current year, but for
+			// now we'll hardcode this.
+			if groupA[2] < 1960 || groupB[2] < 1960 ||
+				groupA[2] > 2030 || groupB[2] > 2030 {
 				goto NO_REVERSE_DATE
 			}
 			// No month
 			if groupA[1] > 12 || groupB[1] > 12 {
 				goto NO_REVERSE_DATE
 			}
-			// No day of month. FIXME Could be improved depending on potential
-			// month?
+			// No day of month. FIXME Technically this means we can have dates
+			// such as 31.02.2024, which don't exist.
 			if groupA[0] > 31 || groupB[0] > 31 {
 				goto NO_REVERSE_DATE
 			}
 
+			// All conditions are met, so we reverse the date into the expected
+			// format, which is YYYY-MM-DD
 			slices.Reverse(groupA)
 			slices.Reverse(groupB)
 

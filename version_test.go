@@ -94,6 +94,19 @@ func Test_CompareVersion(t *testing.T) {
 
 		assert.Equal(t, "01-02-2024", versioncmp.Compare("01-02-2024", "02-01-2024", defaultRules))
 		assert.Equal(t, "02-01-2025", versioncmp.Compare("01-02-2024", "02-01-2025", defaultRules))
+		assert.Equal(t, "01-02-2028", versioncmp.Compare("01-02-2028", "02-01-2027", defaultRules))
+
+		// Ensure no false positive, all of these need to be treated as
+		// major.minor.patch, as we are sure these can't be years / we'll be
+		// dead so we don't care.
+		assert.Equal(t, "02.02.1700", versioncmp.Compare("02.02.1700", "02.01.1700", defaultRules))
+		assert.Equal(t, "02.02.1700", versioncmp.Compare("02.02.1700", "02.01.1701", defaultRules))
+
+		// Interpret as major minor, so major 10 is bigger major 8.
+		assert.Equal(t, "10.02.8354", versioncmp.Compare("10.02.8354", "08.05.8354", defaultRules))
+		// The patch component is bigger, but irrelevant due to the difference
+		// in mjaor. This proves we aren't treating it as a date.
+		assert.Equal(t, "05.01.8354", versioncmp.Compare("05.01.8354", "02.01.8355", defaultRules))
 	})
 
 	t.Run("dates", func(t *testing.T) {

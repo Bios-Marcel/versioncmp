@@ -23,6 +23,12 @@ func Test_CompareVersion(t *testing.T) {
 		t.Parallel()
 	})
 
+	t.Run("pre-releases", func(t *testing.T) {
+		t.Parallel()
+
+		assert.Equal(t, "1.0.0-pre-3", versioncmp.Compare("1.0.0-pre-2", "1.0.0-pre-3", defaultRules))
+	})
+
 	t.Run("semver-like", func(t *testing.T) {
 		t.Parallel()
 
